@@ -2,48 +2,60 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoginFrame extends JFrame {
+
     public LoginFrame() {
         setTitle("Student Bank System - Login");
-        setSize(400, 200);
+        setSize(400, 180);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // center on screen
-        setLayout(new GridLayout(3, 2, 5, 5));
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
+
+        JPanel form = new JPanel(new GridLayout(2, 2, 8, 8));
+        form.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JLabel idLabel = new JLabel("Student ID:");
         JTextField idField = new JTextField();
-
         JLabel passLabel = new JLabel("Password:");
         JPasswordField passField = new JPasswordField();
 
+        form.add(idLabel);
+        form.add(idField);
+        form.add(passLabel);
+        form.add(passField);
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton loginBtn = new JButton("Login");
         JButton registerBtn = new JButton("Register");
 
-        add(idLabel);
-        add(idField);
-        add(passLabel);
-        add(passField);
-        add(loginBtn);
-        add(registerBtn);
+        buttons.add(loginBtn);
+        buttons.add(registerBtn);
 
-        // Simple login action (in-memory)
+        add(form, BorderLayout.CENTER);
+        add(buttons, BorderLayout.SOUTH);
+
         loginBtn.addActionListener(e -> {
-            String id = idField.getText();
-            String pass = new String(passField.getPassword());
+            String id = idField.getText().trim();
+            String pass = new String(passField.getPassword()).trim();
+
+            if (id.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter Student ID and Password.");
+                return;
+            }
+
             Student s = BankSystem.login(id, pass);
             if (s != null) {
-                dispose(); // close login frame
                 new DashboardFrame(s);
+                dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid ID or Password");
+                JOptionPane.showMessageDialog(this, "Invalid Student ID or Password.");
             }
         });
 
-        // Go to registration
         registerBtn.addActionListener(e -> {
+            new RegistrationFrame(null, null);
             dispose();
-            new RegisterFrame();
         });
 
-        setVisible(true); // IMPORTANT! Frame must be visible
+        setVisible(true);
     }
 }
